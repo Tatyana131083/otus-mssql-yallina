@@ -187,3 +187,32 @@ group by CustomerID
 	   ,price
 order by CustomerID
 
+/*Добрый день, в 5 задании правильнее будет использовать группировку и подсчет сумму внутри подзапроса и вместо dense_rank лучше row_number:
+select [PersonID]
+,[FullName]
+,CustomerID
+,CustomerName
+,InvoiceDate
+, summ
+from (
+select p.[PersonID]
+,p.[FullName]
+,cus.CustomerID
+,cus.CustomerName
+,row_number() over(partition by p.[PersonID]order by i.[InvoiceDate] desc) dnsRank
+,i.[InvoiceDate]
+,sum(il.Quantity * il.UnitPrice) summ
+from [Sales].[Invoices] i
+inner join [Sales].[InvoiceLines] il
+on il.InvoiceID = i.InvoiceID
+inner join [Sales].[Customers] cus
+on cus.[CustomerID] = i.[CustomerID]
+inner join [Application].[People] p
+on p.[PersonID] = i.[SalespersonPersonID]
+group by [PersonID]
+,[FullName]
+,cus.CustomerID
+,CustomerName
+,InvoiceDate) tab
+where dnsRank = 1
+ORDER BY [FullName], [InvoiceDate] DESC*/
